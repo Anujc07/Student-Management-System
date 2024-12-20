@@ -1,0 +1,556 @@
+<!doctype html>
+<html lang="en" data-layout="vertical" data-topbar="light" data-sidebar="dark" data-sidebar-size="lg" data-sidebar-image="none">
+<head>
+ {% load static %}
+    <meta charset="utf-8" />
+    <title>SMS Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% comment %} <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" /> {% endcomment %}
+    {% comment %} <meta content="Themesbrand" name="author" /> {% endcomment %}
+    <!-- App favicon -->
+    <link rel="shortcut icon" href="{% static 'assets/images/favicon.ico' %}">
+
+    <!-- Layout config Js -->
+    <script src="{% static 'assets/js/layout.js' %}"></script>
+    <!-- Bootstrap Css -->
+    <link href="{% static 'assets/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
+    <!-- Icons Css -->
+    <link href="{% static 'assets/css/icons.min.css' %}" rel="stylesheet" type="text/css" />
+    <!-- App Css-->
+    <link href="{% static 'assets/css/app.min.css' %}" rel="stylesheet" type="text/css" />
+    <!-- custom Css-->
+    <link href="{% static 'assets/css/custom.min.css' %}" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+
+    <div id="layout-wrapper">
+        <header id="page-topbar">
+            <div class="layout-width">
+                <div class="navbar-header">
+                    <div class="d-flex">
+                        <!-- LOGO -->
+                        <div class="navbar-brand-box horizontal-logo">
+                            <a href="index-2.html" class="logo logo-dark">
+                                <span class="logo-sm">
+                                    <img src="assets/images/logo-sm.png" alt="" height="22">
+                                </span>
+                                <span class="logo-lg">
+                                    <img src="assets/images/logo-dark.png" alt="" height="17">
+                                </span>
+                            </a>
+                            <a href="index-2.html" class="logo logo-light">
+                                <span class="logo-sm">
+                                    <img src="assets/images/logo-sm.png" alt="" height="22">
+                                </span>
+                                <span class="logo-lg">
+                                    <img src="assets/images/logo-light.png" alt="" height="17">
+                                </span>
+                            </a>
+                        </div>
+                        <button type="button" class="btn btn-sm px-3 fs-16 header-item vertical-menu-btn topnav-hamburger shadow-none" id="topnav-hamburger-icon">
+                            <span class="hamburger-icon">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </span>
+                        </button>
+                        
+                    </div>
+                    <div class="d-flex align-items-center">                        
+                        <div class="dropdown ms-sm-3 header-item topbar-user">
+                            <button
+                                type="button"
+                                class="btn shadow-none"
+                                id="page-header-user-dropdown"
+                                data-bs-toggle="dropdown"
+                                aria-haspopup="true"
+                                aria-expanded="false"
+                            >
+                                <span class="d-flex align-items-center">
+                                    <img class="rounded-circle header-profile-user" src="assets/images/users/avatar-1.jpg" alt="Header Avatar">
+                                    <span class="text-start ms-xl-2">
+                                        <span class="d-none d-xl-inline-block ms-1 fw-medium user-name-text">{{ request.session.username }}</span>
+                                        <span class="d-none d-xl-block ms-1 fs-12 text-muted user-name-sub-text">
+                                            {% if request.session.is_staff %}
+                                                Teacher
+                                            {% else %}
+                                                Admin
+                                            {% endif %}
+                                        </span>
+                                    </span>
+                                </span>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-end">
+                                <!-- item-->
+                                <h6 class="dropdown-header">{{ request.session.username }}</h6>
+                                <a class="dropdown-item" href="pages-profile.html"><i class="mdi mdi-account-circle text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Profile</span></a>
+                                
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="{% url 'Logout' %}"><i class="mdi mdi-logout text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Logout</span></a>
+                                
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- ========== App Menu ========== -->
+        <div class="app-menu navbar-menu">
+            <!-- LOGO -->
+            <div class="navbar-brand-box">
+                <!-- Dark Logo-->
+                <a href="index-2.html" class="logo logo-dark">
+                    <span class="logo-sm">
+                        <img src="assets/images/logo-sm.png" alt="" height="22">
+                    </span>
+                    <span class="logo-lg">
+                        <img src="assets/images/logo-dark.png" alt="" height="17">
+                    </span>
+                </a>
+                <!-- Light Logo-->
+                <a href="index-2.html" class="logo logo-light">
+                    <span class="logo-sm">
+                        <img src="assets/images/logo-sm.png" alt="" height="22">
+                    </span>
+                    <span class="logo-lg">
+                        <img src="assets/images/logo-light.png" alt="" height="17">
+                    </span>
+                </a>
+                <button type="button" class="btn btn-sm p-0 fs-20 header-item float-end btn-vertical-sm-hover" id="vertical-hover">
+                    <i class="ri-record-circle-line"></i>
+                </button>
+            </div>
+            <div id="scrollbar">
+                <div class="container-fluid">
+                    <div id="two-column-menu"></div>
+                    <ul class="navbar-nav" id="navbar-nav">
+                        <li class="menu-title">
+                            <span data-key="t-menu">Menu</span>
+                        </li>
+                        
+                        <li class="nav-item">
+                            <a
+                                class="nav-link menu-link"
+                                href="#sidebarApps"
+                                data-bs-toggle="collapse"
+                                role="button"
+                                aria-expanded="false"
+                                aria-controls="sidebarApps"
+                            >
+                                <i class="mdi mdi-view-grid-plus-outline"></i>
+                                <span data-key="t-apps">Masters</span>
+                            </a>
+                            <div class="collapse menu-dropdown" id="sidebarApps">
+                                <ul class="nav nav-sm flex-column">
+                                    {% comment %} <li class="nav-item">
+                                        <a href="{% url 'Add_Student' %}" class="nav-link"> Add Student</a>
+                                    </li> 
+                                    <li class="nav-item">
+                                        <a href="{% url 'Add_Program' %}" class="nav-link"> Add Program</a>
+                                    </li>
+                                     <li class="nav-item">
+                                        <a href="{% url 'Add_Branch' %}" class="nav-link"> Add Branch</a>
+                                    </li> {% endcomment %}
+                                    <li class="nav-item">
+                                        <a
+                                            href="#sidebarProgram"
+                                            class="nav-link"
+                                            data-bs-toggle="collapse"
+                                            role="button"
+                                            aria-expanded="false"
+                                            aria-controls="sidebarProgram"
+                                            data-key="t-email"
+                                        >
+                                            Program Master
+                                        </a>
+                                        <div class="collapse menu-dropdown" id="sidebarProgram">
+                                            <ul class="nav nav-sm flex-column">
+                                               
+                                                <li class="nav-item">
+                                                    <a
+                                                        href="#sidebareprogramTemplates"
+                                                        class="nav-link"
+                                                        data-bs-toggle="collapse"
+                                                        role="button"
+                                                        aria-expanded="false"
+                                                        aria-controls="sidebareprogramTemplates"
+                                                    >
+                                                        <span data-key="t-email-templates">Program</span>
+                                                        {% comment %} <span class="badge badge-pill bg-danger" data-key="t-new">New</span> {% endcomment %}
+                                                    </a>
+                                                    <div class="collapse menu-dropdown" id="sidebareprogramTemplates">
+                                                        <ul class="nav nav-sm flex-column">
+                                                            <li class="nav-item">
+                                                                <a href="{% url 'Add_Program' %}" class="nav-link"> Create Program</a>
+                                                            </li>
+                                                            <li class="nav-item">
+                                                                <a href="{% url 'Program_List' %}" class="nav-link"> Program List</a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </li>  
+
+
+                                    <li class="nav-item">
+                                        <a
+                                            href="#sidebarBranch"
+                                            class="nav-link"
+                                            data-bs-toggle="collapse"
+                                            role="button"
+                                            aria-expanded="false"
+                                            aria-controls="sidebarBranch"
+                                            data-key="t-email"
+                                        >
+                                            Branch Master
+                                        </a>
+                                        <div class="collapse menu-dropdown" id="sidebarBranch">
+                                            <ul class="nav nav-sm flex-column">
+                                               
+                                                <li class="nav-item">
+                                                    <a
+                                                        href="#sidebarebranchTemplates"
+                                                        class="nav-link"
+                                                        data-bs-toggle="collapse"
+                                                        role="button"
+                                                        aria-expanded="false"
+                                                        aria-controls="sidebarebranchTemplates"
+                                                    >
+                                                        <span data-key="t-email-templates">Branch</span>
+                                                        {% comment %} <span class="badge badge-pill bg-danger" data-key="t-new">New</span> {% endcomment %}
+                                                    </a>
+                                                    <div class="collapse menu-dropdown" id="sidebarebranchTemplates">
+                                                        <ul class="nav nav-sm flex-column">
+                                                            <li class="nav-item">
+                                                                <a href="{% url 'Add_Branch' %}" class="nav-link"> Create Branch</a>
+                                                            </li>
+                                                            <li class="nav-item">
+                                                                <a href="{% url 'Branch_List' %}" class="nav-link"> Branch List</a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </li>  
+
+                                    <li class="nav-item">
+                                        <a
+                                            href="#sidebarEmail"
+                                            class="nav-link"
+                                            data-bs-toggle="collapse"
+                                            role="button"
+                                            aria-expanded="false"
+                                            aria-controls="sidebarEmail"
+                                            data-key="t-email"
+                                        >
+                                            Student Master
+                                        </a>
+                                        <div class="collapse menu-dropdown" id="sidebarEmail">
+                                            <ul class="nav nav-sm flex-column">
+                                               
+                                                <li class="nav-item">
+                                                    <a
+                                                        href="#sidebaremailTemplates"
+                                                        class="nav-link"
+                                                        data-bs-toggle="collapse"
+                                                        role="button"
+                                                        aria-expanded="false"
+                                                        aria-controls="sidebaremailTemplates"
+                                                    >
+                                                        <span data-key="t-email-templates">Student</span>
+                                                        {% comment %} <span class="badge badge-pill bg-danger" data-key="t-new">New</span> {% endcomment %}
+                                                    </a>
+                                                    <div class="collapse menu-dropdown" id="sidebaremailTemplates">
+                                                        <ul class="nav nav-sm flex-column">
+                                                            <li class="nav-item">
+                                                                <a href="{% url 'Add_Student' %}" class="nav-link"> Create Student</a>
+                                                            </li>
+                                                            <li class="nav-item">
+                                                                <a href="{% url 'Student_List' %}" class="nav-link"> Students List</a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </li>   
+                                    
+                                    <li class="nav-item">
+                                        <a
+                                            href="#sidebarTeacher"
+                                            class="nav-link"
+                                            data-bs-toggle="collapse"
+                                            role="button"
+                                            aria-expanded="false"
+                                            aria-controls="sidebarTeacher"
+                                            data-key="t-email"
+                                        >
+                                            Teacher Master
+                                        </a>
+                                        <div class="collapse menu-dropdown" id="sidebarTeacher">
+                                            <ul class="nav nav-sm flex-column">
+                                               
+                                                <li class="nav-item">
+                                                    <a
+                                                        href="#sidebareteacherTemplates"
+                                                        class="nav-link"
+                                                        data-bs-toggle="collapse"
+                                                        role="button"
+                                                        aria-expanded="false"
+                                                        aria-controls="sidebareteacherTemplates"
+                                                    >
+                                                        <span data-key="t-email-templates">Teacher</span>
+                                                        {% comment %} <span class="badge badge-pill bg-danger" data-key="t-new">New</span> {% endcomment %}
+                                                    </a>
+                                                    <div class="collapse menu-dropdown" id="sidebareteacherTemplates">
+                                                        <ul class="nav nav-sm flex-column">
+                                                            <li class="nav-item">
+                                                                <a href="{% url 'Add_Teacher' %}" class="nav-link"> Create Teacher</a>
+                                                            </li>
+                                                            <li class="nav-item">
+                                                                <a href="{% url 'Teacher_List' %}" class="nav-link"> Teacher List</a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </li>  
+
+                                    <li class="nav-item">
+                                        <a
+                                            href="#sidebarSubject"
+                                            class="nav-link"
+                                            data-bs-toggle="collapse"
+                                            role="button"
+                                            aria-expanded="false"
+                                            aria-controls="sidebarSubject"
+                                            data-key="t-email"
+                                        >
+                                            Subject Master
+                                        </a>
+                                        <div class="collapse menu-dropdown" id="sidebarSubject">
+                                            <ul class="nav nav-sm flex-column">
+                                               
+                                                <li class="nav-item">
+                                                    <a
+                                                        href="#sidebaresubjectTemplates"
+                                                        class="nav-link"
+                                                        data-bs-toggle="collapse"
+                                                        role="button"
+                                                        aria-expanded="false"
+                                                        aria-controls="sidebaresubjectTemplates"
+                                                    >
+                                                        <span data-key="t-email-templates">Subject</span>
+                                                        {% comment %} <span class="badge badge-pill bg-danger" data-key="t-new">New</span> {% endcomment %}
+                                                    </a>
+                                                    <div class="collapse menu-dropdown" id="sidebaresubjectTemplates">
+                                                        <ul class="nav nav-sm flex-column">
+                                                            <li class="nav-item">
+                                                                <a href="{% url 'Add_Subject' %}" class="nav-link"> Create Subject</a>
+                                                            </li>
+                                                            <li class="nav-item">
+                                                                <a href="{% url 'subject_list' %}" class="nav-link"> Subject List</a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </li> 
+
+                                    <li class="nav-item">
+                                        <a
+                                            href="#sidebarTypeBook"
+                                            class="nav-link"
+                                            data-bs-toggle="collapse"
+                                            role="button"
+                                            aria-expanded="false"
+                                            aria-controls="sidebarTypeBook"
+                                            data-key="t-email"
+                                        >
+                                            Book Type Master
+                                        </a>
+                                        <div class="collapse menu-dropdown" id="sidebarTypeBook">
+                                            <ul class="nav nav-sm flex-column">
+                                               
+                                                <li class="nav-item">
+                                                    <a
+                                                        href="#sidebareTypeBookTemplates"
+                                                        class="nav-link"
+                                                        data-bs-toggle="collapse"
+                                                        role="button"
+                                                        aria-expanded="false"
+                                                        aria-controls="sidebareTypeBookTemplates"
+                                                    >
+                                                        <span data-key="t-email-templates">Book Type</span>
+                                                        {% comment %} <span class="badge badge-pill bg-danger" data-key="t-new">New</span> {% endcomment %}
+                                                    </a>
+                                                    <div class="collapse menu-dropdown" id="sidebareTypeBookTemplates">
+                                                        <ul class="nav nav-sm flex-column">
+                                                            <li class="nav-item">
+                                                                <a href="{% url 'Add_Book_Type' %}" class="nav-link"> Create Book Type</a>
+                                                            </li>
+                                                            <li class="nav-item">
+                                                                <a href="{% url 'Teacher_List' %}" class="nav-link"> Book Type List</a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </li> 
+                                </ul>
+                            </div>
+                        </li>
+                        <!-- end Dashboard Menu -->
+                        <li class="menu-title">
+                            <i class="ri-more-fill"></i>
+                            <span data-key="t-pages">Attendance</span>
+                        </li>
+                        <li class="nav-item">                            
+                            <div>
+                                <ul class="nav nav-sm flex-column">
+                                    <li class="nav-item">
+                                        <a href="{% url 'Get_Students' %}" class="nav-link"> Mark Attendance</a>
+                                    </li> 
+                                </ul>
+                            </div>
+                        </li>
+                        <!-- start Fee Menu -->
+                        <li class="menu-title">
+                            <i class="ri-more-fill"></i>
+                            <span data-key="t-pages">Fee Management</span>
+                        </li>
+                        <li class="nav-item">                            
+                            <div>
+                                <ul class="nav nav-sm flex-column">
+                                    <li class="nav-item">
+                                        <a href="{% url 'Add_Fee' %}" class="nav-link"> Add Fee</a>
+                                    </li> 
+                                    <li class="nav-item">
+                                        <a href="{% url 'Std_Fees_List' %}" class="nav-link"> Fee List</a>
+                                    </li> 
+                                </ul>
+                            </div>
+                        </li>
+                        
+                        <!-- start Library Menu -->
+                        <li class="menu-title">
+                            <i class="ri-more-fill"></i>
+                            <span data-key="t-pages">Library Management</span>
+                        </li>
+                        <li class="nav-item">                            
+                            <div>
+                                <ul class="nav nav-sm flex-column">
+                                    <li class="nav-item">
+                                        <a href="{% url 'Create_Book' %}" class="nav-link"> Add Books</a>
+                                    </li> 
+                                    <li class="nav-item">
+                                        <a href="{% url 'Assign_Book' %}" class="nav-link"> Assign Book</a>
+                                    </li> 
+                                    <li class="nav-item">
+                                        <a href="{% url 'Book_List' %}" class="nav-link"> Manage Books</a>
+                                    </li> 
+                                </ul>
+                            </div>
+                        </li>
+
+                        <!-- start notice Menu -->
+                        <li class="menu-title">
+                            <i class="ri-more-fill"></i>
+                            <span data-key="t-pages">Notice Management</span>
+                        </li>
+                        <li class="nav-item">                            
+                            <div>
+                                <ul class="nav nav-sm flex-column">
+                                    <li class="nav-item">
+                                        <a href="{% url 'Add_Notice' %}" class="nav-link"> Add Notice</a>
+                                    </li> 
+                                    <li class="nav-item">
+                                        <a href="{% url 'Notice_List' %}" class="nav-link"> Notice List</a>
+                                    </li> 
+                                    
+                                </ul>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <!-- Sidebar -->
+            </div>
+            <div class="sidebar-background"></div>
+        </div>
+        <!-- Left Sidebar End -->
+        <!-- Vertical Overlay-->
+        <div class="vertical-overlay"></div>
+        <!-- ============================================================== -->
+        <!-- Start right Content here -->
+        <!-- ============================================================== -->
+        <div class="main-content">
+            <div class="page-content">
+                <div class="container-fluid">
+                    {% block content %}
+
+                    {% endblock %}
+                </div>
+                <!-- container-fluid -->
+            </div>
+            <!-- End Page-content -->
+            <footer class="footer">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <script>document.write(new Date().getFullYear())</script>
+                            © Website Express.
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="text-sm-end d-none d-sm-block">
+                                Design & Develop by Anuj 
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </div>
+        <!-- end main content-->
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Get all alert messages
+            const alerts = document.querySelectorAll('.alert');
+    
+            // Set a timer to remove each alert after 5 seconds
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    alert.style.transition = 'opacity 0.5s';
+                    alert.style.opacity = '0'; // Fade out the alert
+                    setTimeout(() => alert.remove(), 500); // Remove the alert from DOM
+                }, 5000); // 5000ms = 5 seconds
+            });
+        });
+    </script>
+    
+
+    <!-- JAVASCRIPT -->
+    <script src="{% static 'assets/libs/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'assets/libs/simplebar/simplebar.min.js' %}"></script>
+    {% comment %} <script src="{% static 'assets/libs/node-waves/waves.min.js' %}"></script> {% endcomment %}
+    <script src="{% static 'assets/libs/feather-icons/feather.min.js' %}"></script>
+    {% comment %} <script src="{% static 'assets/js/pages/plugins/lord-icon-2.1.0.js' %}"></script> {% endcomment %}
+    {% comment %} <script src="{% static 'assets/js/plugins.js' %}"></script> {% endcomment %}
+
+    <!-- particles js -->
+    {% comment %} <script src="{% static 'assets/libs/particles.js/particles.js' %}"></script> {% endcomment %}
+
+    <!-- particles app js -->
+    {% comment %} <script src="{% static 'assets/js/pages/particles.app.js' %}"></script> {% endcomment %}
+
+    <!-- password-addon init -->
+    {% comment %} <script src="{% static 'assets/js/pages/passowrd-create.init.js' %}"></script> {% endcomment %}
+</body>
+</html>

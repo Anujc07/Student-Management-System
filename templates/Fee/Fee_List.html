@@ -1,0 +1,202 @@
+{% extends 'Base.html' %}
+{% load custom_filters %}
+{% block content %}
+
+<!-- Display Messages -->
+{% if messages %}
+    <div class="alert-container">
+        {% for message in messages %}
+            {% if message.tags == 'error' %}
+                <div class="alert alert-danger shadow mb-xl-0" role="alert">
+                    <strong>Error!</strong> {{ message }}
+                </div>
+            {% elif message.tags == 'success' %}
+                <div class="alert alert-success shadow" role="alert">
+                    <strong>Success!</strong> {{ message }}
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+{% endif %}
+
+<!-- Fee Management Form -->
+<div class="row">
+    <div class="col-xl-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title mb-0">Fee Management</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{% url 'Std_Fees_List' %}">
+                    {% csrf_token %}
+                    <div class="row gy-4">
+                        <!-- Program Selection -->
+                        <div class="col-md-4">
+                            <label for="program" class="form-label">Program</label>
+                            <select id="program" name="program_id" class="form-control" required>
+                                <option value="" disabled selected>Select Program</option>
+                                {% for program in programs %}
+                                    <option value="{{ program.id }}" {% if program.id|stringformat:"s" == request.POST.program_id %}selected{% endif %}>
+                                        {{ program.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Branch Selection -->
+                        <div class="col-md-4">
+                            <label for="branch" class="form-label">Branch</label>
+                            <select id="branch" name="branch_id" class="form-control" required>
+                                <option value="" disabled selected>Select Branch</option>
+                                {% if branches %}
+                                    {% for branch in branches %}
+                                        <option value="{{ branch.id }}" {% if branch.id|stringformat:"s" == request.POST.branch_id %}selected{% endif %}>
+                                            {{ branch.name }}
+                                        </option>
+                                    {% endfor %}
+                                {% endif %}
+                            </select>
+                        </div>
+
+                        <!-- Semester Selection -->
+                        <div class="col-md-4">
+                            <label for="semester" class="form-label">Semester</label>
+                            <select id="semester" name="semester" class="form-control" required>
+                                <option value="" disabled selected>Select Semester</option>
+                              
+                            </select>
+                        </div>
+
+                        <!-- Student Selection -->
+                        <div class="col-md-4">
+                            <label for="student" class="form-label">Student</label>
+                            <select id="student" name="student" class="form-control" >
+                                <option value="" selected>Select Student</option>
+                               
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary mt-3">Show Fee List</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <div class="row mt-4">
+        <div class="col-xl-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Fee Records</h4>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Fee ID</th>
+                                    <th>Program</th>
+                                    <th>Branch</th>
+                                    <th>Semester</th>
+                                    <th>Student</th>
+                                    <th>Total Fee</th>
+                                    <th>Amount</th>
+                                    <th>Payment Type</th>
+                                    <th>Transaction ID</th>
+                                    <th>Cash Notes</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for fee in payment_list %}
+                                    <tr>
+                                        <td>{{ fee.id }}</td>
+                                        <td>{{ fee.program.name }}</td>
+                                        <td>{{ fee.branch.name }}</td>
+                                        <td>{{ fee.semester }}</td>
+                                        <td>{{ fee.student.name }}</td>
+                                        <td>{{ fee.total_fee}}</td>
+                                        <td>{{ fee.payment_amount}}</td>
+                                        <td>{{ fee.payment_type }}</td>
+                                        <td>{{ fee.transaction_id|default:"N/A" }}</td>
+                                        <td>{{ fee.cash_notes|default:"N/A" }}</td>
+                                        <td>{{ fee.date }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const programSelect = document.getElementById("program");
+        const branchSelect = document.getElementById("branch");
+        const semesterSelect = document.getElementById("semester");
+        const studentSelect = document.getElementById("student");
+    
+        // Fetch branches and semesters when a program is selected
+        programSelect.addEventListener("change", function() {
+            const programId = this.value;
+            const branchId = branchSelect.value; // Use selected branch if available
+    
+            if (programId) {
+                fetch(`/fee/get-branches/${programId}/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        // Populate Branches
+                        branchSelect.innerHTML = '<option value="" disabled selected>Select Branch</option>';
+                        data.branches.forEach(branch => {
+                            branchSelect.innerHTML += `<option value="${branch.id}">${branch.name}</option>`;
+                        });
+    
+                        // Populate Semesters
+                        semesterSelect.innerHTML = '<option value="" disabled selected>Select Semester</option>';
+                        
+                        const totalSemesters = data.semesters[0].semsters;
+                        for (let i = 1; i <= totalSemesters; i++) {
+                            semesterSelect.innerHTML += `<option value="${i}">Semester ${i}</option>`;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching branches and semesters:', error);
+                    });
+            } else {
+                // Reset Branch and Semester Dropdowns
+                branchSelect.innerHTML = '<option value="" disabled selected>Select Branch</option>';
+                semesterSelect.innerHTML = '<option value="" disabled selected>Select Semester</option>';
+            }
+        });
+    
+        // Fetch students when semester is selected
+        semesterSelect.addEventListener("change", function() {
+            const programId = programSelect.value;
+            const branchId = branchSelect.value;
+            const semester = this.value;
+    
+            if (programId && branchId && semester) {
+                fetch(`/fee/get-students/${branchId}/${programId}/${semester}/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        // Populate Students dropdown
+                        studentSelect.innerHTML = '<option value="" disabled selected>Select Student</option>';
+                        data.students.forEach(student => {
+                            studentSelect.innerHTML += `<option value="${student.id}">${student.name}</option>`;
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error fetching students:', error);
+                    });
+            }
+        });
+    });
+</script>
+
+
+{% endblock %}

@@ -1,0 +1,183 @@
+{% extends 'Base.html' %}
+{% block content %}
+
+{% if messages %}
+    <div class="alert-container">
+        
+        {% for message in messages %}
+            {% if message.tags == 'error' %}
+                <div class="alert alert-danger shadow mb-xl-0" role="alert">
+                    <strong>Error!</strong> {{ message }}
+                </div>
+            {% elif message.tags == 'success' %}
+                <div class="alert alert-success shadow" role="alert">
+                    <strong>Success!</strong> {{ message }}
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+{% endif %}
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header align-items-center d-flex">
+                <h4 class="card-title mb-0 flex-grow-1">Add Student</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data" action="{% url 'Add_Student' %}">
+                    {% csrf_token %}
+                    <div class="row gy-4">
+                        <div class="col-xxl-3 col-md-6">
+                            <div>
+                                <label for="name" class="form-label">Student Name</label>
+                                <input type="text" class="form-control" id="name" name="name" placeholder="Enter Student Name" required>
+                            </div>
+                        </div>
+
+                        <div class="col-xxl-3 col-md-6">
+                            <div>
+                                <label for="class_name" class="form-label">Class Name</label>
+                                <input type="text" class="form-control" id="class_name" name="class_name" placeholder="Enter Class Name" required>
+                            </div>
+                        </div>
+
+                        <div class="col-xxl-3 col-md-6">
+                            <div>
+                                <label for="roll_no" class="form-label">Roll No</label>
+                                <input type="text" class="form-control" id="roll_no" name="roll_no" placeholder="Enter Roll Number" required>
+                            </div>
+                        </div>
+
+                        <div class="col-xxl-3 col-md-6">
+                            <div>
+                                <label for="dob" class="form-label">Date of Birth</label>
+                                <input type="date" class="form-control" id="dob" name="dob" required>
+                            </div>
+                        </div>
+
+                        
+                        <div class="col-xxl-3 col-md-6">
+                            <div>
+                                <label for="parent_contact" class="form-label">Parent's Contact</label>
+                                <input type="text" 
+                                    class="form-control" 
+                                    id="parent_contact" 
+                                    name="parent_contact" 
+                                    placeholder="Enter Parent's Contact" 
+                                    pattern="[6-9]{1}[0-9]{9}"                                   
+                                    title="Phone number must be exactly 10 digits" 
+                                    required>
+                            </div>
+                        </div>
+
+                        <div class="col-xxl-3 col-md-6">
+                            <div>
+                                <label for="adhaar_no" class="form-label">Aadhaar No</label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="adhaar_no" 
+                                       name="adhaar_no" 
+                                       placeholder="Enter Aadhaar Number" 
+                                       pattern="\d{12}" 
+                                       maxlength="12" 
+                                       minlength="12" 
+                                       title="Aadhaar number must be exactly 12 digits" 
+                                       required>
+                            </div>
+                        </div>
+                        
+
+                        <div class="col-xxl-3 col-md-6">
+                            <div>
+                                <label for="father_name" class="form-label">Father's Name</label>
+                                <input type="text" class="form-control" id="father_name" name="father_name" placeholder="Enter Father's Name" required>
+                            </div>
+                        </div>
+
+                        <div class="col-xxl-3 col-md-6">
+                            <div>
+                                <label for="address" class="form-label">Address</label>
+                                <textarea class="form-control" id="address" name="address" placeholder="Enter Address" required></textarea>
+                            </div>
+                        </div>
+
+                        <div class="col-xxl-3 col-md-6">
+                            <div>
+                                <label for="tenth_marksheet" class="form-label">10th Marksheet</label>
+                                <input type="file" class="form-control" id="tenth_marksheet" name="tenth_marksheet">
+                            </div>
+                        </div>
+
+                        <div class="col-xxl-3 col-md-6">
+                            <div>
+                                <label for="twelfth_marksheet" class="form-label">12th Marksheet</label>
+                                <input type="file" class="form-control" id="twelfth_marksheet" name="twelfth_marksheet">
+                            </div>
+                        </div>
+
+                        <div class="col-xxl-3 col-md-6">
+                            <div>
+                                <label for="program" class="form-label">Program</label>
+                                <select class="form-control" id="program" name="program" required>
+                                    <option value="">-- Select Program --</option>
+                                    {% for program in programs %}
+                                        <option value="{{ program.id }}">{{ program.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-xxl-3 col-md-6">
+                            <div>
+                                <label for="branch" class="form-label">Branch</label>
+                                <select class="form-control" id="branch" name="branch" required>
+                                    <option value="">-- Select Branch --</option>
+                                </select>
+
+                            </div>
+                        </div>
+                    </div>
+                    <!--end row-->
+                    
+                    <div class="mt-3">
+                        <button type="submit" class="btn btn-primary">Add Student</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const programSelect = document.getElementById("program");
+        const branchSelect = document.getElementById("branch");
+
+        programSelect.addEventListener("change", function () {
+            const programId = programSelect.value;
+
+            // Reset branch dropdown
+            branchSelect.innerHTML = '<option value="">-- Select Branch --</option>';
+
+            if (programId) {
+                // Make an AJAX request
+                fetch(`/student/get-branches/${programId}/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        data.forEach(branch => {
+                            const option = document.createElement("option");
+                            option.value = branch.id;
+                            option.textContent = branch.name;
+                            branchSelect.appendChild(option);
+                        });
+                    })
+                    .catch(error => {
+                        console.error("Error fetching branches:", error);
+                    });
+            }
+        });
+    });
+</script>
+
+{% endblock %}

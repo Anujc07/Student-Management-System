@@ -1,0 +1,92 @@
+{% extends 'Base.html' %}
+{% block content %}
+
+<!-- Display Messages -->
+{% if messages %}
+    <div class="alert-container">
+        {% for message in messages %}
+            {% if message.tags == 'error' %}
+                <div class="alert alert-danger shadow mb-xl-0" role="alert">
+                    <strong>Error!</strong> {{ message }}
+                </div>
+            {% elif message.tags == 'success' %}
+                <div class="alert alert-success shadow" role="alert">
+                    <strong>Success!</strong> {{ message }}
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+{% endif %}
+
+<!-- Add Notice Form -->
+<div class="col-lg-12">
+    <div class="card">
+        <div class="card-header align-items-center d-flex">
+            <h4 class="card-title mb-0 flex-grow-1">Add Notice</h4>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="{% url 'Add_Notice' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="row gy-4">
+                    <!-- Notice Title -->
+                    <div class="col-md-6">
+                        <label for="title" class="form-label">Notice Title <span style="color: red;">*</span></label>
+                        <input type="text" id="title" name="title" class="form-control" placeholder="Enter Notice Title" required>
+                    </div>
+
+                    <!-- Notice File -->
+                    <div class="col-md-6">
+                        <label for="notice_file" class="form-label">Notice File (Image/PDF) <span style="color: red;">*</span></label>
+                        <input type="file" id="notice_file" name="notice_file" class="form-control" required>
+                    </div>
+
+                    <!-- Date of Notice -->
+                    <div class="col-md-6">
+                        <label for="date_of_notice" class="form-label">Date of Notice <span style="color: red;">*</span></label>
+                        <input type="date" id="date_of_notice" name="date_of_notice" class="form-control" required>
+                    </div>
+
+                    <!-- Published By -->
+                    <div class="col-md-6">
+                        <label for="published_by" class="form-label">Published By <span style="color: red;">*</span></label>
+                        <input type="text" id="published_by" name="published_by" class="form-control" placeholder="Enter Publisher's Name" required>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="col-md-12">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea id="description" name="description" class="form-control" rows="4" placeholder="Enter a short description"></textarea>
+                    </div>
+
+                    <!-- Audience Type -->
+                    <div class="col-md-6">
+                        <label for="audience_type" class="form-label">Audience Type</label>
+                        <select id="audience_type" name="audience_type" class="form-select">
+                            <option value="all">All</option>
+                            <option value="semester">Specific Semester</option>
+                            <option value="year">Specific Year</option>
+                        </select>
+                    </div>
+
+                    <!-- Specific Semester -->
+                    <div class="col-md-6">
+                        <label for="specific_semester" class="form-label">Specific Semester (if any)</label>
+                        <input type="text" id="specific_semester" name="specific_semester" class="form-control" placeholder="Enter Semester">
+                    </div>
+
+                    <!-- Specific Year -->
+                    <div class="col-md-6">
+                        <label for="specific_year" class="form-label">Specific Year (if any)</label>
+                        <input type="text" id="specific_year" name="specific_year" class="form-control" placeholder="Enter Year">
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">Add Notice</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

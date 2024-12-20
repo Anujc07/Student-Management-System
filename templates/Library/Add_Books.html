@@ -1,0 +1,117 @@
+{% extends 'Base.html' %}
+{% block content %}
+
+
+{% if messages %}
+    <div class="alert-container">
+        {% for message in messages %}
+            {% if message.tags == 'error' %}
+                <div class="alert alert-danger shadow mb-xl-0" role="alert">
+                    <strong>Error!</strong> {{ message }}
+                </div>
+            {% elif message.tags == 'success' %}
+                <div class="alert alert-success shadow" role="alert">
+                    <strong>Success!</strong> {{ message }}
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+{% endif %}
+
+
+<div class="col-lg-12">
+    <div class="card">
+        <div class="card-header align-items-center d-flex">
+            <h4 class="card-title mb-0 flex-grow-1">Add Book</h4>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="{% url 'Create_Book' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="row gy-4">
+                    <!-- Book Title -->
+                    <div class="col-md-6">
+                        <label for="book_title" class="form-label">Book Title <span style="color: red;">*</span></label>
+                        <input type="text" id="book_title" name="book_title" class="form-control" placeholder="Enter Book Title" required>
+                    </div>
+            
+                    <!-- Author -->
+                    <div class="col-md-6">
+                        <label for="author" class="form-label">Author <span style="color: red;">*</span></label>
+                        <input type="text" id="author" name="author" class="form-control" placeholder="Enter Author's Name" required>
+                    </div>
+                </div>
+            
+                <div class="row gy-4 mt-3">
+                    <!-- ISBN -->
+                    <div class="col-md-6">
+                        <label for="isbn" class="form-label">ISBN</label>
+                        <input type="text" id="isbn" name="isbn" class="form-control" placeholder="Enter ISBN">
+                    </div>
+            
+                    <!-- Genre -->
+                    <div class="col-md-6">
+                        <label for="genre" class="form-label">Genre <span style="color: red;">*</span></label>
+                        <select id="genre" name="genre" class="form-control" required>
+                            <option value="">-- Select Genre --</option>
+                            {% if book_types %}
+                                {% for book_type in book_types %}
+                                    <option value="{{ book_type.book_type }}">
+                                        {{ book_type.book_type }}
+                                    </option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+                    </div>
+                    
+                </div>
+            
+                <div class="row gy-4 mt-3">
+                    <!-- Price -->
+                    <div class="col-md-6">
+                        <label for="price" class="form-label">Price <span style="color: red;">*</span></label>
+                        <input type="number" id="price" name="price" class="form-control" step="0.01" min="0" placeholder="Enter Book Price" required>
+                    </div>
+            
+                    <!-- Published Date -->
+                    <div class="col-md-6">
+                        <label for="published_date" class="form-label">Published Date <span style="color: red;">*</span></label>
+                        <input type="date" id="published_date" name="published_date" class="form-control" required>
+                    </div>
+                </div>
+            
+                <div class="row gy-4 mt-3">
+                    <!-- Total Copies -->
+                    <div class="col-md-6">
+                        <label for="total_copies" class="form-label">Total Copies <span style="color: red;">*</span></label>
+                        <input type="number" id="total_copies" name="total_copies" class="form-control" min="0" placeholder="Enter Total Copies" required>
+                    </div>
+            
+                    <!-- Available Copies -->
+                    <div class="col-md-6">
+                        <label for="available_copies" class="form-label">Available Copies <span style="color: red;">*</span></label>
+                        <input type="number" id="available_copies" name="available_copies" class="form-control" min="0" placeholder="Enter Available Copies" required>
+                    </div>
+                </div>
+            
+                <div class="row gy-4 mt-3">
+                    <!-- Cover Image -->
+                    <div class="col-md-6">
+                        <label for="cover_image" class="form-label">Cover Image <span style="color: red;">*</span></label>
+                        <input type="file" id="cover_image" name="cover_image" class="form-control" accept="image/*" required>
+                    </div>
+            
+                    <!-- Description -->
+                    <div class="col-md-6">
+                        <label for="description" class="form-label">Description <span style="color: red;">*</span></label>
+                        <textarea id="description" name="description" class="form-control" rows="4" placeholder="Enter Description" required></textarea>
+                    </div>
+                </div>
+            
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">Add Book</button>
+                </div>
+            </form>            
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,191 @@
+{% extends 'Base.html' %}
+{% block content %}
+{% load custom_filters %}
+
+{% if messages %}
+    <div class="alert-messages">
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<div class="row">
+    <div class="col-xl-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title mb-0">Mark Attendance using filter</h4>
+            </div>
+
+            <div class="card-body">
+                <form method="POST" action="{% url 'Get_Students' %}">
+                    {% csrf_token %}
+                    <div class="col-xxl-3 col-md-6 mb-3">
+                        <label for="teachers" class="form-label">Subject Name</label>
+                        <select id="teachers" name="subject_id" class="form-control" required onchange="this.form.submit()">
+                            <option value="">-- Select Subject --</option>
+                            {% for subject in subjects %}
+                                <option value="{{ subject.id }}" {% if subject.id == request.POST.subject_id %}selected{% endif %}>
+                                    {{ subject.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </form>
+            </div><!-- end card body -->
+        </div>
+    </div>
+    <!-- end col -->
+
+</div>
+
+
+
+<div class="row">
+    <div class="col-xl-12">
+        <div class="card">
+            <div class="card-header align-items-center d-flex">
+                <h4 class="card-title mb-0 flex-grow-1">Mark Attendance {{ selected_subject_name|default:""}}</h4>
+                <div class="flex-shrink-0">
+                    <!-- Add additional header options if needed -->
+                </div>
+            </div><!-- end card header -->
+            <form method="POST" action="{% url 'Save_Attendance' %}">
+                {% csrf_token %}
+                <div class="card-body">
+                    <div class="live-preview">
+                        <div class="table-responsive">
+                            {% if students %}
+                                <table class="table align-middle table-nowrap mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Student Name</th>
+                                            <th scope="col">Present</th>
+                                            <th scope="col">Absent</th>
+                                            <th scope="col">Leave</th>
+                                            <th scope="col">Holiday</th>
+                                            <th scope="col">Half Day</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% comment %} {% for student in students %}
+                                            <tr>
+                                                <td>{{ student.name }}</td>
+                                                <input type="hidden" name="student_ids" value="{{ student.id }}">
+                                                {% with attendance_data|default_if_none:"[]" as data %}
+
+                                                    {% for record in data %}
+                                                        {% if record.student_id == student.id %}
+                                                            {% with record.status as current_status %}
+                                                                <td>
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="checkbox" name="status_{{ student.id }}" value="present" {% if current_status == "present" %}checked{% endif %}>
+                                                                        <label class="form-check-label" for="present_{{ student.id }}">Mark</label>
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="checkbox" name="status_{{ student.id }}" value="absent" {% if current_status == "absent" %}checked{% endif %}>
+                                                                        <label class="form-check-label" for="absent_{{ student.id }}">Mark</label>
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="checkbox" name="status_{{ student.id }}" value="leave">
+                                                                        <label class="form-check-label" for="leave_{{ student.id }}">Mark</label>
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="checkbox" name="status_{{ student.id }}" value="holiday">
+                                                                        <label class="form-check-label" for="holiday_{{ student.id }}">Mark</label>
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="checkbox" name="status_{{ student.id }}" value="halfday">
+                                                                        <label class="form-check-label" for="halfday_{{ student.id }}">Mark</label>
+                                                                    </div>
+                                                                </td>
+                                                            {% endwith %}
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% endwith %}
+                                            </tr>
+                                        {% endfor %} {% endcomment %}
+
+                                        {% with attendance_data|default_if_none:"{}" as data %}
+                                        {% for student in students %}
+                                            <tr>
+                                                <td>{{ student.name }}</td>
+                                                <input type="hidden" name="student_ids" value="{{ student.id }}">
+                                    
+                                                {% with data|dict_key:student.id as record %}
+                                        
+                                                    <td>
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox" name="status_{{ student.id }}" value="present" 
+                                                                {% if record and record.status == "present" %}checked disabled{% endif %}>
+                                                            <label class="form-check-label" for="present_{{ student.id }}">Present</label>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox" name="status_{{ student.id }}" value="absent" 
+                                                                {% if record and record.status == "absent" %}checked disabled{% endif %}>
+                                                            <label class="form-check-label" for="absent_{{ student.id }}">Absent</label>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox" name="status_{{ student.id }}" value="leave" 
+                                                                {% if record and record.status == "leave" %}checked disabled{% endif %}>
+                                                            <label class="form-check-label" for="leave_{{ student.id }}">Leave</label>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox" name="status_{{ student.id }}" value="holiday" 
+                                                                {% if record and record.status == "holiday" %}checked disabled{% endif %}>
+                                                            <label class="form-check-label" for="holiday_{{ student.id }}">Holiday</label>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox" name="status_{{ student.id }}" value="halfday" 
+                                                                {% if record and record.status == "halfday" %}checked disabled{% endif %}>
+                                                            <label class="form-check-label" for="halfday_{{ student.id }}">Half Day</label>
+                                                        </div>
+                                                    </td>
+                                                {% endwith %}
+                                            </tr>
+                                        {% endfor %}
+                                    {% endwith %}
+                                    
+
+                                    </tbody>
+                                    
+                                </table>
+                                <button type="submit" name="attendance_submit" class="btn btn-primary mt-3">Submit Attendance</button>
+
+                            {% else %}
+                                <p>Please select a subject to view students.</p>
+                            {% endif %}
+                        </div>
+                        
+                        
+                    </div>            
+                </div><!-- end card-body -->
+            </form>
+        </div><!-- end card -->
+    </div>
+    <!-- end col -->
+</div>
+<!-- end row -->
+
+
+
+
+{% endblock %}

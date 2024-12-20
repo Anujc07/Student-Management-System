@@ -1,0 +1,280 @@
+{% extends 'Base.html' %}
+{% block content %}
+{% if messages %}
+    <div class="alert-container">
+        
+        {% for message in messages %}
+            {% if message.tags == 'error' %}
+                <div class="alert alert-danger shadow mb-xl-0" role="alert">
+                    <strong>Error!</strong> {{ message }}
+                </div>
+            {% elif message.tags == 'success' %}
+                <div class="alert alert-success shadow" role="alert">
+                    <strong>Success!</strong> {{ message }}
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+{% endif %}
+
+<!-- Student Filter Form -->
+<div class="row">
+    <div class="col-xl-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title mb-0">Manage Student</h4>
+            </div>
+            <div class="card-body">
+                <form method="GET" action="{% url 'Student_List' %}">
+                    <div class="row gy-4">
+                        <!-- Student Name Filter -->
+                        <div class="col-md-4">
+                            <label for="student_name" class="form-label">Student Name</label>
+                            <input type="text" id="student_name" name="student_name" class="form-control" placeholder="Enter Student Name" value="{{ request.GET.student_name|default:'' }}">
+                        </div>
+
+                        <!-- Program Name Filter -->
+                        <div class="col-md-4">
+                            <label for="program_name" class="form-label">Program Name</label>
+                            <input type="text" id="program_name" name="program_name" class="form-control" placeholder="Enter Program Name" value="{{ request.GET.program_name|default:'' }}">
+                        </div>
+
+                        <!-- Branch Name Filter -->
+                        <div class="col-md-4">
+                            <label for="branch_name" class="form-label">Branch Name</label>
+                            <input type="text" id="branch_name" name="branch_name" class="form-control" placeholder="Enter Branch Name" value="{{ request.GET.branch_name|default:'' }}">
+                        </div>
+                    </div>
+                    <div class="row gy-4">
+                        <div class="col-md-4">
+                            <button type="submit" class="btn btn-primary mt-3">Filter Students</button>
+                            <a class="btn btn-danger mt-3" href="{% url 'Student_List' %}">Reset</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row mt-4">
+    <div class="col-xl-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">Student Records</h4>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Class</th>
+                                <th>Roll No</th>
+                                <th>DOB</th>
+                                <th>Parent Contact</th>
+                                <th>Adhaar No</th>
+                                <th>Father's Name</th>
+                                <th>Address</th>
+                                <th>Program</th>
+                                <th>Branch</th>
+                                <th>10th Marksheet</th>
+                                <th>12th Marksheet</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for student in students %}
+                            <tr>
+                                <td>{{ student.id }}</td>
+                                <td>{{ student.name }}</td>
+                                <td>{{ student.class_name }}</td>
+                                <td>{{ student.roll_no }}</td>
+                                <td>{{ student.dob }}</td>
+                                <td>{{ student.parent_contact }}</td>
+                                <td>{{ student.adhaar_no }}</td>
+                                <td>{{ student.father_name }}</td>
+                                <td>{{ student.address }}</td>
+                                <td>
+                                    {% if student.program %}
+                                        {{ student.program.name }}
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if student.branch %}
+                                        {{ student.branch.name }}
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </td>
+                                
+                                                                <td>
+                                    {% if student.tenth_marksheet %}
+                                    <a href="/student{{ student.tenth_marksheet.url }}" target="_blank">View</a>
+
+                                    {% else %}
+                                    N/A
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if student.twelfth_marksheet %}
+                                    <a href="/student{{ student.twelfth_marksheet.url }}" target="_blank">View</a>
+                                    {% else %}
+                                    N/A
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-warning btn-sm edit-program-btn" data-id="{{ student.id }}" 
+                                    data-bs-toggle="modal" data-bs-target="#editStudentModal" 
+                                    data-name="{{ student.name }}" data-class="{{ student.class_name }}" 
+                                    data-roll-no="{{ student.roll_no }}" data-dob="{{ student.dob }}"
+                                    data-parent-contact="{{ student.parent_contact }}" data-adhaar="{{ student.adhaar_no }}" 
+                                    data-father-name="{{ student.father_name }}" data-address="{{ student.address }}" 
+                                    data-program="{% if student.program %}{{ student.program.id }}{% else %}''{% endif %}"
+                                    data-branch="{% if student.branch %}{{ student.branch.id }}{% else %}''{% endif %}"
+                                    >Edit</button>
+                                    <a class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this student?');">Delete</a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="14" class="text-center">No students found.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Edit Student Modal -->
+<div class="modal fade" id="editStudentModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 overflow-hidden">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Student</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editStudentForm" method="POST" action="{% url 'Edit_Student' 0 %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="student_id" id="editStudentId">
+
+                    <div class="mb-3">
+                        <label for="editStudentName" class="form-label">Student Name</label>
+                        <input type="text" class="form-control" id="editStudentName" name="name" placeholder="Enter Student Name">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editClassName" class="form-label">Class</label>
+                        <input type="text" class="form-control" id="editClassName" name="class_name" placeholder="Enter Class">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editRollNo" class="form-label">Roll No</label>
+                        <input type="text" class="form-control" id="editRollNo" name="roll_no" placeholder="Enter Roll No">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editDob" class="form-label">Date of Birth</label>
+                        <input type="date" class="form-control" id="editDob" name="dob">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editParentContact" class="form-label">Parent Contact</label>
+                        <input type="text" class="form-control" id="editParentContact" name="parent_contact" placeholder="Enter Parent Contact">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editAdhaar" class="form-label">Adhaar No</label>
+                        <input type="text" class="form-control" id="editAdhaar" name="adhaar_no" placeholder="Enter Adhaar No">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editFatherName" class="form-label">Father's Name</label>
+                        <input type="text" class="form-control" id="editFatherName" name="father_name" placeholder="Enter Father's Name">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editAddress" class="form-label">Address</label>
+                        <input type="text" class="form-control" id="editAddress" name="address" placeholder="Enter Address">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editProgram" class="form-label">Program </label>
+                        
+                        <select class="form-control" id="editProgram" name="program">
+                            {% for program in programs %}
+                                <option value="{{ program.id }}">{{ program.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editBranch" class="form-label">Branch</label>
+                        <select class="form-control" id="editBranch" name="branch">
+                            {% for branch in branches %}
+                                <option value="{{ branch.id }}">{{ branch.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const editButtons = document.querySelectorAll(".edit-program-btn");
+        const editStudentForm = document.getElementById("editStudentForm");
+
+        editButtons.forEach(button => {
+            button.addEventListener("click", () => {
+                const studentId = button.getAttribute("data-id");
+                const studentName = button.getAttribute("data-name");
+                const className = button.getAttribute("data-class");
+                const rollNo = button.getAttribute("data-roll-no");
+                const dob = button.getAttribute("data-dob");
+                const parentContact = button.getAttribute("data-parent-contact");
+                const adhaarNo = button.getAttribute("data-adhaar");
+                const fatherName = button.getAttribute("data-father-name");
+                const address = button.getAttribute("data-address");
+                const programId = button.getAttribute("data-program");
+                const branchId = button.getAttribute("data-branch");
+                const parsedDate = new Date(dob);
+                const formattedDate = parsedDate.toISOString().split("T")[0];
+ 
+                document.getElementById("editStudentId").value = studentId;
+                document.getElementById("editStudentName").value = studentName;
+                document.getElementById("editClassName").value = className;
+                document.getElementById("editRollNo").value = rollNo;
+                document.getElementById("editDob").value = formattedDate;
+                document.getElementById("editParentContact").value = parentContact;
+                document.getElementById("editAdhaar").value = adhaarNo;
+                document.getElementById("editFatherName").value = fatherName;
+                document.getElementById("editAddress").value = address;
+                document.getElementById("editProgram").value = programId;
+                document.getElementById("editBranch").value = branchId;
+
+                editStudentForm.action = `/student/student/edit/${studentId}/`;
+
+                // Show the modal
+                // new bootstrap.Modal(document.getElementById("editStudentModal")).show();
+            });
+        });
+    });
+</script>
+{% endblock %}

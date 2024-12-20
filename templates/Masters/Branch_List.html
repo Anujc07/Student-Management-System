@@ -1,0 +1,187 @@
+{% extends 'Base.html' %}
+{% block content %}
+{% if messages %}
+    <div class="alert-container">
+        
+        {% for message in messages %}
+            {% if message.tags == 'error' %}
+                <div class="alert alert-danger shadow mb-xl-0" role="alert">
+                    <strong>Error!</strong> {{ message }}
+                </div>
+            {% elif message.tags == 'success' %}
+                <div class="alert alert-success shadow" role="alert">
+                    <strong>Success!</strong> {{ message }}
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+{% endif %}
+<div class='row mb-4'>
+    <div class="col-lg-12">
+        <form method="GET" action="{% url 'Branch_List' %}" class="row gy-2 gx-3 align-items-center">
+            <!-- Branch Name Filter -->
+            <div class="col-auto">
+                <label for="branch_name" class="form-label">Branch Name</label>
+                <input type="text" id="branch_name" name="branch_name" class="form-control"
+                       placeholder="Enter Branch Name" value="{{ request.GET.branch_name|default:'' }}">
+            </div>
+
+            <!-- Program Filter -->
+            <div class="col-auto">
+                <label for="program" class="form-label">Program</label>
+                <input type="text" id="program" name="program" class="form-control"
+                       placeholder="Enter Program" value="{{ request.GET.program|default:'' }}">
+            </div>
+
+            <!-- Head of Branch Filter -->
+            <div class="col-auto">
+                <label for="head_of_branch" class="form-label">Head of Branch</label>
+                <input type="text" id="head_of_branch" name="head_of_branch" class="form-control"
+                       placeholder="Enter Head of Branch" value="{{ request.GET.head_of_branch|default:'' }}">
+            </div>
+
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary">Filter</button>
+                <a href="{% url 'Branch_List' %}" class="btn btn-secondary">Reset</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class='row'>
+    <div class="col-lg-12">
+        <div class="table-responsive table-card">
+            <table class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Branch Name</th>
+                        <th>Program</th>
+                        <th>Head of Branch</th>
+                        <th>Contact</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for branch in branches %}
+                    <tr>
+                        <td>{{ branch.id }} </td>
+                        <td>{{ branch.name }}</td>
+                        <td>
+                            {% if branch.program %}
+                                {{ branch.program.name }}
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if branch.head_of_branch %}
+                                {{ branch.head_of_branch }}
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if branch.contact %}
+                                {{ branch.contact }}
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="#" class="btn btn-warning btn-sm edit-branch-btn" 
+                                data-id="{{ branch.id }}" 
+                                data-name="{{ branch.name }}" 
+                                data-program="{{ branch.program.id }}" 
+                                data-status="{{ branch.status }}" 
+
+                                data-bs-toggle="modal" 
+                                data-bs-target="#editbranch">Edit</a>
+                            <a href="{% url 'delete_branch' branch.id %}" class="btn btn-danger btn-sm"
+                               onclick="return confirm('Are you sure you want to delete this branch?');">Delete</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center">No branches found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<div class="col-xl-4 col-md-6">
+    <div class="modal fade" id="editbranch" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 overflow-hidden">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Branch</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editBranchForm" method="POST" action="{% url 'edit_branch' 0 %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="branch_id" id="editBranchId">
+                        
+                        <div class="mb-3">
+                            <label for="editBranchName" class="form-label">Branch Name</label>
+                            <input type="text" class="form-control" id="editBranchName" name="name" placeholder="Enter branch name">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="editProgram" class="form-label">Program</label>
+                            <select class="form-control" id="branchProgram" name="program">
+                                {% for program in programs %}
+                                <option value="{{ program.id }}">{{ program.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="editStatus" class="form-label">Status</label>
+                            <input type="number" class="form-control" id="editStatus" name="status" placeholder="Enter status">
+                        </div>
+                        
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</div><!-- end col -->
+
+<script>
+
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const editButtons = document.querySelectorAll(".edit-branch-btn");
+        const editBranchForm = document.getElementById("editBranchForm");
+    
+        editButtons.forEach(button => {
+            button.addEventListener("click", () => {
+                const branchId = button.getAttribute("data-id");
+                const branchName = button.getAttribute("data-name");
+                const programId = button.getAttribute("data-program");
+                const status = button.getAttribute("data-status");
+    
+                // Populate the modal form fields
+                document.getElementById("editBranchId").value = branchId;
+                document.getElementById("editBranchName").value = branchName;
+                document.getElementById("branchProgram").value = programId;
+                document.getElementById("editStatus").value = status;
+    
+                // Update the form action dynamically
+                editBranchForm.action = `/student/edit/${branchId}/`;
+            });
+        });
+    });
+    
+    
+</script>
+{% endblock %}

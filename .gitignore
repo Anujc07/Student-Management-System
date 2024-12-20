@@ -1,0 +1,8 @@
+*.pyc
+*.pyo
+__pycache__/
+*/migrations/
+*.log
+/media/10th_marksheet
+/media/12th_marksheet
+/media/fee_screenshots
